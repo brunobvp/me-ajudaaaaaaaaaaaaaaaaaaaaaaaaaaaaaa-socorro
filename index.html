@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Gerador de Senhas Seguro</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a1a3f;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .container {
+    background: #132a63;
+    padding: 40px;
+    border-radius: 15px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 0 20px #000;
+  }
+
+  .lock {
+    font-size: 60px;
+    margin-bottom: 15px;
+  }
+
+  h1 {
+    margin-bottom: 25px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 15px;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button.generate {
+    background: #4CAF50;
+    color: white;
+  }
+
+  button.copy {
+    background: #2196F3;
+    color: white;
+  }
+
+  button:hover {
+    opacity: 0.9;
+  }
+
+  .options {
+    text-align: left;
+    margin-bottom: 15px;
+  }
+
+  .options label {
+    display: block;
+    margin: 5px 0;
+    font-size: 14px;
+  }
+
+  .slider-container {
+    margin-bottom: 15px;
+    text-align: left;
+  }
+
+  .slider-container input[type="range"] {
+    width: 100%;
+  }
+
+  .strength-bar {
+    height: 10px;
+    width: 100%;
+    background: #444;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+
+  .strength {
+    height: 100%;
+    width: 0;
+    background: #f00;
+    transition: width 0.3s;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="lock">🔒</div>
+  <h1>Gerador de Senhas</h1>
+
+  <input type="text" id="password" readonly placeholder="Sua senha aparecerá aqui">
+
+  <div class="slider-container">
+    <label for="length">Tamanho da senha: <span id="length-val">12</span></label>
+    <input type="range" id="length" min="6" max="32" value="12" oninput="document.getElementById('length-val').innerText = this.value">
+  </div>
+
+  <div class="options">
+    <label><input type="checkbox" id="uppercase" checked> Incluir maiúsculas</label>
+    <label><input type="checkbox" id="numbers" checked> Incluir números</label>
+    <label><input type="checkbox" id="symbols" checked> Incluir símbolos</label>
+  </div>
+
+  <div class="strength-bar">
+    <div class="strength" id="strength"></div>
+  </div>
+
+  <button class="generate" onclick="generatePassword()">Gerar Senha</button>
+  <button class="copy" onclick="copyPassword()">Copiar</button>
+</div>
+
+<script>
+function generatePassword() {
+  const length = parseInt(document.getElementById('length').value);
+  const upper = document.getElementById('uppercase').checked;
+  const numbers = document.getElementById('numbers').checked;
+  const symbols = document.getElementById('symbols').checked;
+
+  let chars = "abcdefghijklmnopqrstuvwxyz";
+  if (upper) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  if (numbers) chars += "0123456789";
+  if (symbols) chars += "!@#$%&*()_+[]{}<>?";
+
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    password += chars[randomIndex];
+  }
+
+  document.getElementById('password').value = password;
+  updateStrength(password);
+}
+
+function copyPassword() {
+  const input = document.getElementById('password');
+  input.select();
+  navigator.clipboard.writeText(input.value);
+  alert("Senha copiada!");
+}
+
+function updateStrength(password) {
+  const strengthBar = document.getElementById('strength');
+  let strength = 0;
+
+  if (password.length >= 8) strength += 1;
+  if (/[A-Z]/.test(password)) strength += 1;
+  if (/[0-9]/.test(password)) strength += 1;
+  if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+  switch(strength) {
+    case 0: strengthBar.style.width = "10%"; strengthBar.style.background = "#f00"; break;
+    case 1: strengthBar.style.width = "30%"; strengthBar.style.background = "#f60"; break;
+    case 2: strengthBar.style.width = "60%"; strengthBar.style.background = "#ff0"; break;
+    case 3: strengthBar.style.width = "80%"; strengthBar.style.background = "#9f0"; break;
+    case 4: strengthBar.style.width = "100%"; strengthBar.style.background = "#4CAF50"; break;
+  }
+}
+</script>
+
+</body>
+</html>
